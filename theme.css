@@ -1,0 +1,109 @@
+/* ============================================================
+   YOUNG MAN GROWTH PLAN — THEME TOKENS
+   ------------------------------------------------------------
+   TO SWAP THEMES: comment out the active :root block below and
+   uncomment one of the alternates. Nothing else in the app
+   references a color or font directly — only these tokens.
+   Font links are loaded in the HTML <head>; swap those too.
+   ============================================================ */
+
+/* ---------- ACTIVE: FIELD & TRAIL ---------- */
+:root {
+  --color-bg:            #C7B994;
+  --color-surface:       #F7F2E4;
+  --color-surface-alt:   #EFE6CC;
+  --color-surface-deep:  #E4D8B8;
+  --color-primary:       #2C4A37;
+  --color-primary-dark:  #1C3125;
+  --color-primary-soft:  rgba(44,74,55,0.12);
+  --color-accent:        #BC5321;
+  --color-accent-light:  #E3A15C;
+  --color-accent-soft:   rgba(188,83,33,0.12);
+  --color-ink:           #2A2419;
+  --color-ink-soft:      rgba(42,36,25,0.62);
+  --color-ink-faint:     rgba(42,36,25,0.35);
+  --color-locked:        #9C9070;
+  --color-success:       #4B7B52;
+  --color-danger:        #A8402C;
+  --color-on-primary:    #F7F2E4;
+  --color-on-accent:     #FFF6EC;
+  /* status text that sits on the dark mentor panel — must stay legible there */
+  --color-status-good:   #A9DCB6;
+  --color-status-bad:    #F0A9A2;
+  --color-status-warn:   #E5A099;
+  --font-heading:        'Staatliches', 'Oswald', sans-serif;
+  --font-body:           'Zilla Slab', Georgia, serif;
+  --heading-spacing:     1.5px;
+  --heading-transform:   uppercase;
+  --radius:              4px;
+  --radius-lg:           6px;
+  --grain-opacity:       0.05;
+}
+
+/* ---------- ALTERNATE: QUEST LOG ----------
+   Fonts: Cinzel (heading) + Merriweather (body)
+:root {
+  --color-bg:            #121D33;
+  --color-surface:       #1B2A4A;
+  --color-surface-alt:   #16233D;
+  --color-surface-deep:  #0E1728;
+  --color-primary:       #D4AF37;
+  --color-primary-dark:  #A8862A;
+  --color-primary-soft:  rgba(212,175,55,0.14);
+  --color-accent:        #C9852F;
+  --color-accent-light:  #E8C877;
+  --color-accent-soft:   rgba(212,175,55,0.12);
+  --color-ink:           #F0E6D2;
+  --color-ink-soft:      rgba(240,230,210,0.66);
+  --color-ink-faint:     rgba(240,230,210,0.35);
+  --color-locked:        #6B7B96;
+  --color-success:       #7BAE7F;
+  --color-danger:        #8B2635;
+  --color-on-primary:    #121D33;
+  --color-on-accent:     #F0E6D2;
+  --color-status-good:   #A9DCB6;
+  --color-status-bad:    #F0A9A2;
+  --color-status-warn:   #E5A099;
+  --font-heading:        'Cinzel', serif;
+  --font-body:           'Merriweather', Georgia, serif;
+  --heading-spacing:     1px;
+  --heading-transform:   uppercase;
+  --radius:              5px;
+  --radius-lg:           8px;
+  --grain-opacity:       0.03;
+}
+------------------------------------------------ */
+
+/* ---------- ALTERNATE: HERITAGE TRAIL ----------
+   Fonts: Alfa Slab One (heading) + Bitter (body)
+:root {
+  --color-bg:            #DCD3BE;
+  --color-surface:       #F5EDE0;
+  --color-surface-alt:   #EDE3CF;
+  --color-surface-deep:  #E0D4BB;
+  --color-primary:       #1E3D2F;
+  --color-primary-dark:  #142A20;
+  --color-primary-soft:  rgba(30,61,47,0.12);
+  --color-accent:        #B5482A;
+  --color-accent-light:  #D98D5F;
+  --color-accent-soft:   rgba(181,72,42,0.12);
+  --color-ink:           #2A2115;
+  --color-ink-soft:      rgba(42,33,21,0.62);
+  --color-ink-faint:     rgba(42,33,21,0.35);
+  --color-locked:        #A89B7C;
+  --color-success:       #3F6B47;
+  --color-danger:        #9C3520;
+  --color-on-primary:    #F5EDE0;
+  --color-on-accent:     #F5EDE0;
+  --color-status-good:   #A9DCB6;
+  --color-status-bad:    #F0A9A2;
+  --color-status-warn:   #E5A099;
+  --font-heading:        'Alfa Slab One', serif;
+  --font-body:           'Bitter', Georgia, serif;
+  --heading-spacing:     0.5px;
+  --heading-transform:   uppercase;
+  --radius:              3px;
+  --radius-lg:           4px;
+  --grain-opacity:       0.04;
+}
+------------------------------------------------ */

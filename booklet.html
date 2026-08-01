@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Field &amp; Trail — Printable Booklet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Staatliches&family=Zilla+Slab:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="theme.css">
+<style>
+  * { box-sizing: border-box; }
+  html, body { margin:0; padding:0; }
+  body { background: var(--color-bg); font-family: var(--font-body); color: var(--color-ink); padding: 24px 0 60px; }
+  h1,h2,h3,h4 { font-family: var(--font-heading); font-weight: 400; letter-spacing: var(--heading-spacing); text-transform: var(--heading-transform); margin: 0; }
+
+  .toolbar { max-width: 7.5in; margin: 0 auto 20px; display:flex; gap:10px; align-items:center; justify-content:space-between; flex-wrap:wrap; padding: 0 12px; }
+  .toolbar p { margin:0; font-size: 13px; color: var(--color-ink-soft); max-width: 460px; line-height:1.55; }
+  .pbtn { font-family: var(--font-body); font-size: 14px; font-weight:600; background: var(--color-primary); color: var(--color-on-primary);
+    border:none; border-radius: var(--radius); padding: 11px 18px; cursor:pointer; display:inline-flex; align-items:center; gap:8px; }
+  .pbtn:hover { filter: brightness(1.12); }
+  .pbtn svg { width:15px; height:15px; }
+
+  .sheet {
+    width: 7.5in; min-height: 10in; margin: 0 auto 18px; background: var(--color-surface);
+    padding: 0.55in 0.6in 0.5in; position: relative; box-shadow: 0 6px 24px rgba(0,0,0,.16);
+  }
+  .sheet::after {
+    content: attr(data-pg); position: absolute; bottom: 0.3in; right: 0.6in;
+    font-family: var(--font-heading); font-size: 11px; color: var(--color-ink-faint); letter-spacing: 1.5px;
+  }
+  .rule { height:2px; background: var(--color-primary); margin: 8px 0 16px; }
+  .rule.thin { height:1px; background: var(--color-primary-soft); }
+  .dashrule { height:1px; background: repeating-linear-gradient(90deg, var(--color-primary) 0 4px, transparent 4px 9px); opacity:.5; margin: 6px 0 14px; }
+
+  .kicker { font-family: var(--font-heading); font-size: 11px; letter-spacing: 3px; color: var(--color-accent); text-transform: uppercase; margin: 0 0 6px; }
+  .sheet h2 { font-size: 25px; color: var(--color-primary); line-height:1.1; }
+  .sheet h3 { font-size: 15px; color: var(--color-primary); margin: 18px 0 9px; }
+  .sheet p { font-size: 12.5px; line-height: 1.6; margin: 0 0 10px; }
+  .small { font-size: 11px; color: var(--color-ink-soft); line-height:1.5; }
+
+  .verse { background: var(--color-surface-alt); padding: 12px 14px; font-style: italic; font-size: 12.5px; line-height:1.6; border-radius: var(--radius); margin: 0 0 10px; }
+  .verse cite { display:block; margin-top:7px; font-style: normal; font-family: var(--font-heading); font-size: 11px; letter-spacing:1px; color: var(--color-primary); }
+  .quote { border-left: 3px solid var(--color-accent-light); padding: 4px 0 4px 13px; font-size: 12.5px; line-height:1.6; margin: 0 0 14px; }
+  .quote cite { display:block; margin-top:6px; font-style:normal; font-size: 11px; color: var(--color-ink-soft); }
+
+  .chk { display:flex; align-items:flex-start; gap:9px; font-size: 12.5px; margin-bottom: 7px; line-height:1.5; }
+  .box { width:13px; height:13px; border:1.6px solid var(--color-primary); border-radius:2px; flex-shrink:0; margin-top:2px; }
+  .box.circle { border-radius:50%; }
+
+  .grid7 { display:grid; grid-template-columns: 1.9fr repeat(7, 1fr); gap:0; border:1px solid var(--color-primary-soft); border-radius: var(--radius); overflow:hidden; }
+  .grid7 > div { padding: 6px 7px; border-right:1px solid var(--color-primary-soft); border-bottom:1px solid var(--color-primary-soft); font-size: 10.5px; line-height:1.3; min-height: 30px; display:flex; align-items:center; }
+  .grid7 > div:nth-child(8n) { border-right:none; }
+  .grid7 .hd { background: var(--color-primary); color: var(--color-on-primary); font-family: var(--font-heading); font-size: 10px; letter-spacing:1px; justify-content:center; }
+  .grid7 .hd.l { justify-content:flex-start; }
+  .grid7 .cell { justify-content:center; }
+  .grid7 .cell::before { content:""; width:11px; height:11px; border:1.4px solid var(--color-primary); border-radius:2px; }
+
+  .lines { margin: 4px 0 0; }
+  .lines div { border-bottom: 1px solid var(--color-primary-soft); height: 0.3in; }
+  .lines.tall div { height: 0.34in; }
+
+  .badgerow { display:grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 8px; }
+  .bslot { text-align:center; }
+  .bcirc { width: 52px; height: 52px; margin: 0 auto 5px; border-radius:50%; border: 1.8px dashed var(--color-primary); }
+  .bslot span { font-family: var(--font-heading); font-size: 9.5px; letter-spacing:.5px; color: var(--color-ink-soft); line-height:1.2; display:block; }
+
+  .privtable { width:100%; border-collapse: collapse; font-size: 11px; }
+  .privtable th { background: var(--color-primary); color: var(--color-on-primary); font-family: var(--font-heading); font-size: 10px; letter-spacing:1px; text-transform:uppercase; padding: 7px 8px; text-align:left; font-weight:400; }
+  .privtable td { border-bottom: 1px solid var(--color-primary-soft); padding: 9px 8px; vertical-align: top; line-height:1.45; }
+  .privtable td.sig { width: 0.9in; }
+
+  .cover { display:flex; flex-direction:column; justify-content:center; min-height: 9in; text-align:center; }
+  .cover .mark { width: 110px; height: 110px; margin: 0 auto 26px; border: 2px solid var(--color-primary); border-radius:50%; display:flex; align-items:center; justify-content:center; position:relative; }
+  .cover .mark svg { width: 54px; height: 54px; color: var(--color-accent); }
+  .cover h1 { font-size: 46px; color: var(--color-primary); line-height:1; margin-bottom: 10px; }
+  .cover .sub { font-family: var(--font-heading); font-size: 15px; letter-spacing: 4px; color: var(--color-accent); text-transform:uppercase; margin-bottom: 30px; }
+  .cover .tag { font-size: 15px; font-style: italic; color: var(--color-ink-soft); margin-bottom: 40px; }
+  .nameline { max-width: 3.6in; margin: 0 auto; }
+  .nameline div { border-bottom: 1px solid var(--color-primary); height: 0.42in; }
+  .nameline span { font-family: var(--font-heading); font-size: 10.5px; letter-spacing:1.5px; color: var(--color-ink-faint); display:block; margin-top: 5px; }
+
+  @media print {
+    body { background: #fff; padding: 0; }
+    .toolbar { display: none; }
+    .sheet { box-shadow: none; margin: 0; width: 100%; min-height: auto; page-break-after: always; padding: 0.45in 0.5in; }
+    .sheet:last-child { page-break-after: auto; }
+    @page { size: letter portrait; margin: 0.35in; }
+  }
+</style>
+</head>
+<body>
+
+<div class="toolbar">
+  <p>Print to PDF or paper. Set margins to "Default" and enable background graphics so the green headers and rules print. Each section below is one page.</p>
+  <button class="pbtn" onclick="window.print()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9V3h12v6M6 18H4v-6h16v6h-2M8 14h8v7H8z"/></svg>
+    Print / save as PDF
+  </button>
+</div>
+
+<div id="book"></div>
+
+<script src="content_q1_tier1.js"></script>
+<script>
+const DAYS = ['M','T','W','T','F','S','S'];
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;');
+let pg = 0;
+const sheet = (inner, cls) => { pg++; return '<div class="sheet ' + (cls||'') + '" data-pg="' + pg + '">' + inner + '</div>'; };
+
+let out = '';
+
+/* ---- COVER ---- */
+pg++;
+out += '<div class="sheet" data-pg="">' +
+  '<div class="cover">' +
+    '<div class="mark"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="12" r="10"/><path d="M15.5 8.5l-4.2 2.3-2.3 4.2 4.2-2.3z"/></svg></div>' +
+    '<h1>Field &amp; Trail</h1>' +
+    '<p class="sub">Quarter ' + PLAN.meta.quarter + ' &middot; ' + PLAN.meta.quarterName + '</p>' +
+    '<p class="tag">"' + PLAN.meta.tagline + '"</p>' +
+    '<div class="nameline"><div></div><span>This log belongs to</span></div>' +
+    '<div class="nameline" style="margin-top:28px"><div></div><span>Mentor</span></div>' +
+    '<div class="nameline" style="margin-top:28px"><div></div><span>Started on</span></div>' +
+  '</div></div>';
+
+/* ---- HOW THIS WORKS ---- */
+out += sheet(
+  '<p class="kicker">Before you start</p><h2>How this works</h2><div class="rule"></div>' +
+  '<p>This is thirteen weeks. Not a quiz, not a chore chart — a record of who you are becoming. Three parts:</p>' +
+  '<h3>Roots</h3>' +
+  '<p>Eight things you do every single day. They never change and you never choose them, because every man needs them. Roots go down before branches go out. They are boring on purpose — the boring things done daily are what hold a man up when things get hard.</p>' +
+  '<h3>Branches</h3>' +
+  '<p>Every week there is one challenge where <em>you</em> choose how to apply what you know. And once a quarter you pick one quest — a book, a skill, a build, a way to serve — and you carry it the whole thirteen weeks. Nobody picks it for you. Pick the one that stretches you, not the easy one.</p>' +
+  '<h3>Fruit</h3>' +
+  '<p>Badges, rank, and real privileges. Points make a privilege <em>eligible</em>. Your mentor decides whether it is granted, and can take it back — with a reason, written down, and a way to earn it back. That is not punishment. A tree that is pruned grows better fruit.</p>' +
+  '<div class="dashrule"></div>' +
+  '<h3>Points</h3>' +
+  '<p class="small">Daily root — ' + PLAN.points.dailyRoot + ' pt each &nbsp;·&nbsp; Weekly journal — ' + PLAN.points.weeklyReflection + ' pts &nbsp;·&nbsp; Weekly challenge — ' + PLAN.points.weeklyApplication + ' pts &nbsp;·&nbsp; Mentor conversation — ' + PLAN.points.mentorConversation + ' pts &nbsp;·&nbsp; Quest milestone — ' + PLAN.points.questMilestone + ' pts &nbsp;·&nbsp; Quest finished — ' + PLAN.points.questComplete + ' pts</p>' +
+  '<h3>Ranks</h3>' +
+  PLAN.ranks.map(r => '<p class="small" style="margin-bottom:5px"><strong>' + r.name + '</strong> — ' + r.minPoints + ' pts. ' + r.note + '</p>').join('') +
+  '<p class="small" style="margin-top:10px"><em>Points alone never rank you up. Your mentor signs off. The game cannot be gamed.</em></p>'
+);
+
+/* ---- ROOTS REFERENCE ---- */
+out += sheet(
+  '<p class="kicker">The eight</p><h2>Your daily roots</h2><div class="rule"></div>' +
+  '<p>Every day. All eight. No exceptions, no negotiating, no picking favorites.</p>' +
+  PLAN.dailyRoots.map(r => '<div class="chk"><span class="box"></span><span><strong>' + r.text + '</strong><br><span class="small">' + r.area + '</span></span></div>').join('') +
+  '<div class="dashrule" style="margin-top:20px"></div>' +
+  '<h3>On breaking a streak</h3>' +
+  '<p>You will miss a day. Everyone does. A broken streak is not a failure of character, it is a Tuesday. What matters is whether you start again on Wednesday, or whether you quit because it is no longer perfect. Men who finish things are not men who never miss. They are men who restart faster than they quit.</p>' +
+  '<div class="dashrule"></div>' +
+  '<h3>Quest options</h3>' +
+  '<p class="small">Pick one in week 2. Work it weeks 3 through 11.</p>' +
+  PLAN.quests.map(q => '<div class="chk"><span class="box circle"></span><span><strong>' + q.name + '</strong> — ' + q.blurb + '</span></div>').join('')
+);
+
+/* ---- WEEKLY PAGES ---- */
+PLAN.weeks.forEach(w => {
+  let g = '<div class="grid7"><div class="hd l">Daily roots</div>' + DAYS.map(d => '<div class="hd">' + d + '</div>').join('');
+  PLAN.dailyRoots.forEach(r => {
+    g += '<div>' + r.text + '</div>' + DAYS.map(() => '<div class="cell"></div>').join('');
+  });
+  g += '</div>';
+
+  out += sheet(
+    '<p class="kicker">Week ' + w.n + ' of 13</p><h2>' + w.theme + '</h2><div class="rule"></div>' +
+    '<div class="verse">"' + w.verse.text + '"<cite>' + w.verse.ref + '</cite></div>' +
+    '<div class="quote">' + w.quote.text + '<cite>— ' + w.quote.by + '</cite></div>' +
+    g +
+    '<h3>This week&rsquo;s challenge — ' + w.application.title + '</h3>' +
+    '<p>' + w.application.text + '</p>' +
+    '<p class="small" style="margin-bottom:7px"><strong>Pick your approach:</strong></p>' +
+    w.application.options.map(o => '<div class="chk"><span class="box circle"></span><span>' + o + '</span></div>').join('') +
+    '<h3>Journal</h3>' +
+    '<p class="small" style="margin-bottom:6px">' + w.journal + '</p>' +
+    '<div class="lines">' + '<div></div>'.repeat(6) + '</div>' +
+    '<div class="dashrule" style="margin-top:14px"></div>' +
+    '<div class="chk"><span class="box"></span><span class="small"><strong>Mentor conversation had this week.</strong> ' + esc(w.mentor) + '</span></div>'
+  );
+});
+
+/* ---- MAN PROFILES ---- */
+out += sheet(
+  '<p class="kicker">Men worth studying</p><h2>Three young men</h2><div class="rule"></div>' +
+  PLAN.profiles.map(p =>
+    '<h3>' + p.name + '</h3><p>' + p.blurb + '</p>' +
+    '<div class="quote">' + p.takeaway + '<cite>' + p.ref + '</cite></div>').join('') +
+  '<div class="dashrule"></div>' +
+  '<p class="small">Every one of them was about your age. None of them knew how it would turn out. All three did the right thing in a room where nobody would have known if they had not.</p>'
+);
+
+/* ---- BADGE SHELF ---- */
+const qb = PLAN.quests.map(q => ({ name: q.badge, req: 'Finish the ' + q.name + ' quest' }));
+const allB = PLAN.badges.concat(qb);
+out += sheet(
+  '<p class="kicker">Fruit</p><h2>Badge shelf</h2><div class="rule"></div>' +
+  '<p>Color one in, sign the date, or stick a real patch on it. Earned only — never given.</p>' +
+  '<div class="badgerow">' + allB.map(b => '<div class="bslot"><div class="bcirc"></div><span>' + b.name + '</span></div>').join('') + '</div>' +
+  '<div class="dashrule" style="margin-top:22px"></div>' +
+  '<h3>What each one takes</h3>' +
+  allB.map(b => '<p class="small" style="margin-bottom:5px"><strong>' + b.name + '</strong> — ' + b.req + '</p>').join('') +
+  '<div class="dashrule" style="margin-top:18px"></div>' +
+  '<h3>Points tally</h3>' +
+  '<div class="grid7" style="grid-template-columns: repeat(7, 1fr)">' +
+    ['Wk 1-2','Wk 3-4','Wk 5-6','Wk 7-8','Wk 9-10','Wk 11-12','Wk 13'].map(l => '<div class="hd">' + l + '</div>').join('') +
+    '<div style="min-height:44px"></div>'.repeat(7) +
+  '</div>'
+);
+
+/* ---- PRIVILEGE LEDGER ---- */
+out += sheet(
+  '<p class="kicker">Mentor page</p><h2>Privilege ledger</h2><div class="rule"></div>' +
+  '<p>Points make a privilege <strong>eligible</strong>. The mentor decides whether it is granted. Every grant and every revoke gets a date and initials — and a revoke gets a reason, written where he can read it.</p>' +
+  '<table class="privtable"><thead><tr><th>Privilege</th><th>Risk</th><th>Threshold</th><th class="sig">Granted</th><th class="sig">Revoked</th></tr></thead><tbody>' +
+  PLAN.privileges.map(p =>
+    '<tr><td><strong>' + p.name + '</strong><br><span class="small">Earn it back: ' + p.restore + '</span></td>' +
+    '<td>' + p.risk + '</td><td>' + p.reqPoints + ' pts<br><span class="small">' + p.reqRank + '</span></td>' +
+    '<td class="sig"></td><td class="sig"></td></tr>').join('') +
+  '</tbody></table>' +
+  '<h3>Revocation log</h3>' +
+  '<p class="small" style="margin-bottom:6px">Date · privilege · reason. Never revoke silently — name it plainly so it stays a growth conversation instead of a punishment.</p>' +
+  '<div class="lines">' + '<div></div>'.repeat(7) + '</div>'
+);
+
+/* ---- QUARTER REVIEW / CO-SIGN ---- */
+out += sheet(
+  '<p class="kicker">Week 13</p><h2>Quarter review</h2><div class="rule"></div>' +
+  '<div class="verse">"' + PLAN.weeks[12].verse.text + '"<cite>' + PLAN.weeks[12].verse.ref + '</cite></div>' +
+  '<h3>Go back through all thirteen weeks</h3>' +
+  '<div class="chk"><span class="box"></span><span>The week that changed me most was ______ , because...</span></div>' +
+  '<div class="lines">' + '<div></div>'.repeat(3) + '</div>' +
+  '<div class="chk" style="margin-top:12px"><span class="box"></span><span>The root habit that is now automatic:</span></div>' +
+  '<div class="lines">' + '<div></div>'.repeat(2) + '</div>' +
+  '<div class="chk" style="margin-top:12px"><span class="box"></span><span>The one I am still fighting:</span></div>' +
+  '<div class="lines">' + '<div></div>'.repeat(2) + '</div>' +
+  '<div class="dashrule" style="margin-top:16px"></div>' +
+  '<h3>Mentor co-sign</h3>' +
+  '<p class="small">Sign only when all thirteen weeks are genuinely done. Write one <em>specific</em> thing you have seen grow in him. "You did great" means nothing and he knows it.</p>' +
+  '<div class="lines tall">' + '<div></div>'.repeat(4) + '</div>' +
+  '<div style="display:flex; gap:24px; margin-top:22px">' +
+    '<div style="flex:1"><div style="border-bottom:1px solid var(--color-primary); height:.4in"></div><span class="small">Mentor signature</span></div>' +
+    '<div style="width:1.5in"><div style="border-bottom:1px solid var(--color-primary); height:.4in"></div><span class="small">Date</span></div>' +
+  '</div>' +
+  '<div style="display:flex; gap:24px; margin-top:18px">' +
+    '<div style="flex:1"><div style="border-bottom:1px solid var(--color-primary); height:.4in"></div><span class="small">Rank earned</span></div>' +
+    '<div style="width:1.5in"><div style="border-bottom:1px solid var(--color-primary); height:.4in"></div><span class="small">Total points</span></div>' +
+  '</div>'
+);
+
+/* ---- LETTER TO FUTURE SELF ---- */
+out += sheet(
+  '<p class="kicker">Seal this page</p><h2>Letter to yourself</h2><div class="rule"></div>' +
+  '<p>Write to the man you will be thirteen weeks from now. What do you want to be true about you by then? What are you afraid will still be true? Be honest — nobody reads this but you, and you will not read it again until the quarter is done.</p>' +
+  '<div class="lines tall">' + '<div></div>'.repeat(17) + '</div>' +
+  '<p class="small" style="margin-top:14px">Fold this page over and tape it shut. Open it in week 13.</p>'
+);
+
+document.getElementById('book').innerHTML = out;
+</script>
+</body>
+</html>
