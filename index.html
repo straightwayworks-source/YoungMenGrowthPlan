@@ -738,6 +738,55 @@ function renderBadges() {
    RENDER — PRIVILEGES (PIN GATED)
    ============================================================ */
 let unlocked = false;
+let lockTimer = null;
+const LOCK_AFTER_MS = 10 * 60 * 1000;   /* auto-lock after 10 minutes of no mentor activity */
+
+function lockAll(silent) {
+  unlocked = false;
+  clearTimeout(lockTimer);
+  renderPriv(); renderMentor();
+  if (!silent) toast('Locked', 'Mentor controls locked again.', 'lock');
+}
+function touchLock() {
+  clearTimeout(lockTimer);
+  if (unlocked) lockTimer = setTimeout(() => lockAll(false), LOCK_AFTER_MS);
+}
+function unlockAll() { unlocked = true; touchLock(); renderPriv(); renderMentor(); }
+
+/* Shared lock UI. `sc` scopes the input id so both mentor surfaces can render one. */
+function gateHTML(sc, msg) {
+  return '<div class="locknote">' + svg('lock') + '<span>' +
+      (S.pin ? msg : 'Set a 4-digit mentor PIN. Until you do, this side is open — set it now.') +
+    '</span></div>' +
+    '<div class="pinbox"><input id="pinIn_' + sc + '" type="password" inputmode="numeric" maxlength="4" placeholder="&bull;&bull;&bull;&bull;">' +
+    '<button class="btn acc sm pinGo">' + (S.pin ? 'Unlock' : 'Set PIN') + '</button>' +
+    (S.pin ? '<button class="btn ghost sm pinReset" style="background:transparent;color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.2)">Forgot PIN</button>' : '') +
+    '</div>';
+}
+function lockBtnHTML(dark) {
+  const style = dark ? 'background:transparent;color:var(--color-accent-light);border-color:rgba(227,161,92,.4)' : '';
+  return '<div class="pinbox"><button class="btn ghost sm pinLock" style="' + style + '">' + svg('lock') + 'Lock mentor panel</button></div>';
+}
+/* One handler for both panels. Returns true when it consumed the click. */
+function handleGateClick(e, sc) {
+  if (e.target.closest('.pinGo')) {
+    const i = document.getElementById('pinIn_' + sc);
+    const v = i.value.trim();
+    const bad = () => { i.classList.add('shake'); i.value = ''; setTimeout(() => i.classList.remove('shake'), 400); };
+    if (!/^\d{4}$/.test(v)) { bad(); return true; }
+    if (!S.pin) { S.pin = v; save(); toast('PIN set', 'Mentor side is protected. It re-locks when the app closes.', 'lock'); unlockAll(); }
+    else if (S.pin === v) { toast('Unlocked', 'Mentor controls active.', 'unlock'); unlockAll(); }
+    else { bad(); }
+    return true;
+  }
+  if (e.target.closest('.pinLock')) { lockAll(true); return true; }
+  if (e.target.closest('.pinReset')) {
+    if (confirm('Clear the mentor PIN? This wipes the PIN only — privilege history is kept.')) { S.pin = null; save(); lockAll(true); }
+    return true;
+  }
+  return false;
+}
+
 function privState(p) {
   const rec = S.privileges[p.id];
   if (rec && rec.status) return rec.status;
@@ -768,30 +817,13 @@ function renderPriv() {
     '</div>';
   }).join('') + '</div>';
 
-  if (!unlocked) {
-    html += '<div class="locknote">' + svg('lock') + '<span>' + (S.pin ? 'Enter the mentor PIN to grant or revoke.' : 'Set a 4-digit mentor PIN to enable granting and revoking.') + '</span></div>' +
-      '<div class="pinbox"><input id="pinIn" type="password" inputmode="numeric" maxlength="4" placeholder="••••">' +
-      '<button class="btn acc sm" id="pinGo">' + (S.pin ? 'Unlock' : 'Set PIN') + '</button>' +
-      (S.pin ? '<button class="btn ghost sm" id="pinReset" style="background:transparent;color:rgba(255,255,255,.5);border-color:rgba(255,255,255,.2)">Forgot PIN</button>' : '') + '</div>';
-  } else {
-    html += '<div class="pinbox"><button class="btn ghost sm" id="pinLock" style="background:transparent;color:var(--color-accent-light);border-color:rgba(227,161,92,.4)">' + svg('lock') + 'Lock panel</button></div>';
-  }
+  if (!unlocked) { html += gateHTML('priv', 'Enter the mentor PIN to grant or revoke.'); }
+  else { html += lockBtnHTML(true); }
   panel.innerHTML = html;
 }
 document.getElementById('privPanel').addEventListener('click', e => {
-  if (e.target.closest('#pinGo')) {
-    const v = document.getElementById('pinIn').value.trim();
-    if (!/^\d{4}$/.test(v)) { document.getElementById('pinIn').classList.add('shake'); setTimeout(()=>document.getElementById('pinIn').classList.remove('shake'),400); return; }
-    if (!S.pin) { S.pin = v; unlocked = true; save(); toast('PIN set','Mentor panel is now protected.','lock'); }
-    else if (S.pin === v) { unlocked = true; toast('Unlocked','Mentor controls active.','unlock'); }
-    else { const i = document.getElementById('pinIn'); i.classList.add('shake'); i.value=''; setTimeout(()=>i.classList.remove('shake'),400); return; }
-    renderPriv(); return;
-  }
-  if (e.target.closest('#pinLock')) { unlocked = false; renderPriv(); return; }
-  if (e.target.closest('#pinReset')) {
-    if (confirm('Clear the mentor PIN? This wipes the PIN only — privilege history is kept.')) { S.pin = null; save(); renderPriv(); }
-    return;
-  }
+  if (handleGateClick(e, 'priv')) return;
+  touchLock();
   const g = e.target.closest('[data-grant]');
   if (g && unlocked) {
     const p = PLAN.privileges.find(x => x.id === g.dataset.grant);
@@ -816,10 +848,19 @@ document.getElementById('privPanel').addEventListener('click', e => {
    RENDER — MENTOR
    ============================================================ */
 function renderMentor() {
+  const body = document.getElementById('mentorBody');
+  if (!unlocked) {
+    body.innerHTML = '<div class="privpanel"><h3>' + svg('lock') + 'Mentor only</h3>' +
+      '<p style="font-size:14px;line-height:1.6;color:rgba(255,255,255,.72);margin:10px 0 0">' +
+        'The week&rsquo;s conversation prompt, the man worth studying, and the quarter co-sign are on this side. ' +
+        (S.pin ? 'Enter the PIN to open them.' : 'Set a PIN so this stays yours.') +
+      '</p>' + gateHTML('men', 'Enter the mentor PIN to open this.') + '</div>';
+    return;
+  }
   const w = PLAN.weeks[curWeek-1];
   const st = S.weeks[curWeek] || {};
   const prof = PLAN.profiles[Math.min(2, Math.floor((curWeek-1)/5))];
-  document.getElementById('mentorBody').innerHTML =
+  body.innerHTML =
     '<div class="card accent riser"><h2 class="sec-title">' + svg('users') + 'Week ' + w.n + ' conversation</h2>' +
       '<p class="muted" style="margin:0 0 14px; font-size:15px">' + w.mentor + '</p>' +
       '<button class="btn ' + (st.mentorDone?'ghost':'acc') + '" id="menBtn">' + svg('check') + (st.mentorDone ? 'Had it — undo' : 'We had this conversation') + '</button>' +
@@ -832,9 +873,12 @@ function renderMentor() {
       '<p class="muted" style="margin:0 0 13px">Sign off only when all thirteen weeks are done. Say one specific thing you have seen grow in him — "you did great" means nothing.</p>' +
       '<textarea id="cosign" placeholder="What I have seen grow in you this quarter...">' + (S.cosignNote||'') + '</textarea>' +
       '<div style="margin-top:12px"><button class="btn ' + (S.mentorCosign?'ghost':'acc') + '" id="cosignBtn">' + svg('check') + (S.mentorCosign ? 'Signed — undo' : 'Sign off on the quarter') + '</button></div>' +
-    '</div>';
+    '</div>' +
+    lockBtnHTML(false);
 }
 document.getElementById('mentorBody').addEventListener('click', e => {
+  if (handleGateClick(e, 'men')) return;
+  touchLock();
   if (e.target.closest('#menBtn')) {
     if (!S.weeks[curWeek]) S.weeks[curWeek] = {};
     S.weeks[curWeek].mentorDone = !S.weeks[curWeek].mentorDone;
@@ -847,7 +891,7 @@ document.getElementById('mentorBody').addEventListener('click', e => {
   }
 });
 document.getElementById('mentorBody').addEventListener('input', e => {
-  if (e.target.id === 'cosign') { S.cosignNote = e.target.value; clearTimeout(window._ct); window._ct = setTimeout(save, 600); }
+  if (e.target.id === 'cosign') { touchLock(); S.cosignNote = e.target.value; clearTimeout(window._ct); window._ct = setTimeout(save, 600); }
 });
 
 /* ============================================================
